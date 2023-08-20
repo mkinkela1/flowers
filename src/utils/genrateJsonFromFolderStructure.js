@@ -9,7 +9,7 @@ function convertUnderscoreToSpace(inputString) {
 }
 
 function readDirectories(root) {
-  const directories = fs.readdirSync(root, { withFileTypes: true });
+  const directories = fs.readdirSync(root, {withFileTypes: true});
 
   const imageDataArray = [];
 
@@ -21,12 +21,12 @@ function readDirectories(root) {
 
       images.forEach(imageName => {
         const [latinName] = imageName.split('.');
-          const image = {
-            familyName,
-            latinName: convertUnderscoreToSpace(latinName),
-            image: imageName
-          };
-          imageDataArray.push(image);
+        const image = {
+          familyName,
+          latinName: convertUnderscoreToSpace(latinName),
+          image: `${familyName}/${imageName}`
+        };
+        imageDataArray.push(image);
       });
     }
   });

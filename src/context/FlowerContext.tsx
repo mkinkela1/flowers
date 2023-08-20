@@ -1,13 +1,15 @@
 import * as React from "react";
 import {createContext, useContext, useEffect, useState} from "react";
-import {IFlower} from "src/types/Flower";
+import {IFlower} from "./../types/Flower";
 
 interface IFlowerWithSort extends IFlower {
   sortValue: number;
 }
 
 interface IFlowerContext {
-  flowers: IFlower[]
+  flowers: IFlower[];
+  currentFlower: IFlower;
+  next: () => void;
 }
 
 interface IFlowerContextProviderProps {
@@ -19,6 +21,7 @@ const FlowerContext = createContext<IFlowerContext | null>(null);
 export const FlowerContextProvider: React.FC<IFlowerContextProviderProps> = ({children}) => {
 
   const [flowers, setFlowers] = useState<IFlower[]>([])
+  const [currentIdx, setCurrentIdx] = useState<number>(0)
 
   const loadFlowers = async () => {
     try {
@@ -36,15 +39,24 @@ export const FlowerContextProvider: React.FC<IFlowerContextProviderProps> = ({ch
     }
   }
 
+  const currentFlower = flowers[currentIdx]
+
+  const next = () => {
+    if (currentIdx >= flowers.length - 1) setCurrentIdx(0)
+    else setCurrentIdx(prevCurrentIdx => prevCurrentIdx + 1)
+  }
+
   useEffect(() => {
     loadFlowers();
   }, []);
 
-  return <FlowerContext.Provider value={{flowers}}>{children}</FlowerContext.Provider>
+  return <FlowerContext.Provider value={{flowers, currentFlower, next}}>{children}</FlowerContext.Provider>
 }
 
-const useFlowerContext = () => {
+export const useFlowerContext = () => {
   const context = useContext(FlowerContext);
 
   if (!context) throw new Error("FlowerContext should be inside FlowerContextProvider")
+
+  return context
 }
